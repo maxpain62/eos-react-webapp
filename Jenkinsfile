@@ -10,7 +10,7 @@ metadata:
 spec:
   containers:
   - name: build
-    image: dpthub/eos-jen-build-agent
+    image: dpthub/eos-jen-node-build-agent 
     command:
     - cat
     tty: true
