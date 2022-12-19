@@ -29,7 +29,7 @@ spec:
           git credentialsId: 'git', url: 'https://dptrealtime@bitbucket.org/dptrealtime/eos-react-webapp.git', branch: 'master'
           container('build') {
                 stage('Build a React Webapp') {
-                    sh 'node run build'             
+                    sh 'npm run build'             
                 }
             }
         }
