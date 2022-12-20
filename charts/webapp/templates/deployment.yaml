@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: eos-react-webapp
-        image: docker.io/dpthub/eos-react-webapp:latest
+        image: {{ .Values.deployment.imageTag }}
         ports:
         - containerPort: 3000
         readinessProbe:
