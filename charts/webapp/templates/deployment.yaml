@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: eos-react-webapp
-        image: {{ .Values.deployment.imageTag }}
+        image: {{ .Values.deployment.image }}
         ports:
         - containerPort: 3000
         readinessProbe:
