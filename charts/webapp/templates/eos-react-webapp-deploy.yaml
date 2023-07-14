@@ -5,7 +5,7 @@ metadata:
   labels:
     app: eos-react-webapp
 spec:
-  replicas: 1
+  replicas: {{ .Values.deployment.replicas }}
   selector:
     matchLabels:
       app: eos-react-webapp

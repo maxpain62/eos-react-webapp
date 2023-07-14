@@ -4,7 +4,7 @@ metadata:
   name: eos-react-webapp
 spec:
   rules:
-  - host: dev.edshopper.com
+  - host: {{ .Values.ingress.host }}
     http:
       paths:
       - path: /

@@ -1,4 +1,5 @@
-def label = "build"
+def label = "eosagent"
+def mvn_version = 'M2'
 podTemplate(label: label, yaml: """
 apiVersion: v1
 kind: Pod
@@ -10,7 +11,7 @@ metadata:
 spec:
   containers:
   - name: build
-    image: dpthub/dpt7-jenkins-agent
+    image: dpthub/eos-jenkins-agent-base:latest
     command:
     - cat
     tty: true
@@ -22,7 +23,7 @@ spec:
     hostPath:
       path: /var/run/docker.sock
 """
-) {
+)  {
     node (label) {
 
         stage ('Checkout SCM'){
@@ -48,7 +49,7 @@ spec:
             dir('charts') {
               withCredentials([usernamePassword(credentialsId: 'jfrog', usernameVariable: 'username', passwordVariable: 'password')]) {
               sh '/usr/local/bin/helm package webapp'
-              sh '/usr/local/bin/helm push-artifactory webapp-1.0.tgz https://edproject.jfrog.io/artifactory/dpt7-helm-local --username $username --password $password'
+              sh '/usr/local/bin/helm push-artifactory webapp-1.0.tgz https://eosartifact.jfrog.io/artifactory/eos-helm-local  --username $username --password $password'
               }
             }
           }
