@@ -36,7 +36,7 @@ spec:
       tty: true
       resources:
         limits:
-          memory: "2Gi"
+          memory: "1Gi"
           cpu: "1000m"
       volumeMounts:
         - name: home-jenkins
