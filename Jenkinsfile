@@ -45,7 +45,7 @@ podTemplate (yaml: readTrusted('pod.yaml'))  {
         container('aws-cli-helm') {
           sh """
             helm package eos-react-webapp-chart && ls -l
-            helm push eos-react-webapp-0.1.0.tgz oci://134448505602.dkr.ecr.ap-south-1.amazonaws.com/dev/helm/
+            helm push eos-react-webapp-0.2.0.tgz oci://134448505602.dkr.ecr.ap-south-1.amazonaws.com/dev/helm/
             aws ecr describe-images --repository-name dev/helm/eos-react-webapp --region ap-south-1
           """
         }
