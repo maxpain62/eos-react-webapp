@@ -30,7 +30,7 @@ spec:
           mountPath: /home/jenkins/
     # node-build container is for building and react code
     - name: node-build
-      image: node:22.22-bullseye
+      image: maxpain62/node:16.20.2
       command:
         - cat
       tty: true
