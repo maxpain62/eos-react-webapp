@@ -1,0 +1,12 @@
+replicaCount: 1
+
+containers:
+  image: 134448505602.dkr.ecr.ap-south-1.amazonaws.com/dev/eos-react-webapp:latest
+
+port: 3000
+
+labels:
+  app: eos-react-webapp
+  env: dev
+
+namespace: eos-dev
