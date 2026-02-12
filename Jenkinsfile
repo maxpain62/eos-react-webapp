@@ -1,58 +1,54 @@
-def label = "eosagent"
-def mvn_version = 'M2'
-podTemplate(label: label, yaml: """
-apiVersion: v1
-kind: Pod
-metadata:
-  labels:
-    app: build
-  annotations:
-    sidecar.istio.io/inject: "false"
-spec:
-  containers:
-  - name: build
-    image: dpthub/eos-jenkins-agent-base:latest
-    command:
-    - cat
-    tty: true
-    volumeMounts:
-    - name: dockersock
-      mountPath: /var/run/docker.sock
-  volumes:
-  - name: dockersock
-    hostPath:
-      path: /var/run/docker.sock
-"""
-)  {
-    node (label) {
-
-        stage ('Checkout SCM'){
-          git credentialsId: 'git', url: 'https://dptrealtime@bitbucket.org/dptrealtime/eos-react-webapp.git', branch: 'master'
-          container('build') {
-                stage('Build a React Webapp') {
-                    sh 'CI=false npm run build'             
-                }
-            }
+podTemplate (yaml: readTrusted('pod.yaml'))  {
+    node (POD_LABEL) {
+      stage('Checkout Source') {
+      git branch: 'main', url: 'https://github.com/maxpain62/eos-react-webapp.git'
+      script {
+            // Capture tag into a Groovy variable
+            env.GIT_TAG = sh(
+                script: "git tag --sort=-creatordate | head -1",
+                returnStdout: true
+            ).trim()
         }
-        stage ('Docker Build'){
-          container('build') {
-                stage('Build Image') {
-                    docker.withRegistry( 'https://registry.hub.docker.com', 'docker' ) {
-                    def customImage = docker.build("dpthub/eos-react-webapp:latest")
-                    customImage.push()             
-                    }
-                }
-            }
+        echo "${env.GIT_TAG}"
+      }
+      stage ('ECR login') {
+      container('aws-cli-helm') {
+        sh """
+          aws ecr get-login-password --region ap-south-1 | helm registry login --username AWS --password-stdin 134448505602.dkr.ecr.ap-south-1.amazonaws.com
+          """
         }
-        stage ('Helm Chart') {
-          container('build') {
-            dir('charts') {
-              withCredentials([usernamePassword(credentialsId: 'jfrog', usernameVariable: 'username', passwordVariable: 'password')]) {
-              sh '/usr/local/bin/helm package webapp'
-              sh '/usr/local/bin/helm push-artifactory webapp-1.0.tgz https://eosartifact.jfrog.io/artifactory/eos-helm-local  --username $username --password $password'
-              }
-            }
-          }
-       }
-    }
+      }
+      stage ('build react project') {
+        container('node-build') {
+          sh """
+            npm install
+            npm run build
+          """
+        }
+      }
+      stage ('build docker image and push to ecr repository') {
+        container('buildkit') {
+          sh """
+          ls -l && ls -l target/
+          buildctl --addr tcp://buildkitd.devops-tools.svc.cluster.local:1234\
+          --tlscacert /certs/ca.pem\
+          --tlscert /certs/cert.pem\
+          --tlskey /certs/key.pem\
+          build --frontend dockerfile.v0\
+          --opt filename=Dockerfile --local context=.\
+          --local dockerfile=.\
+          --output type=image,name=134448505602.dkr.ecr.ap-south-1.amazonaws.com/dev/eos-react-webapp:latest,push=true
+          """
+        }
+      }
+      stage ('package helm chart and push aws ecr repository') {
+        container('aws-cli-helm') {
+          sh """
+            helm package eos-react-webapp-chart && ls -l
+            helm push eos-react-webapp-0.1.0.tgz oci://134448505602.dkr.ecr.ap-south-1.amazonaws.com/dev/helm/
+            aws ecr describe-images --repository-name dev/helm/eos-react-webapp --region ap-south-1
+          """
+        }
+      }
+  }
 }
