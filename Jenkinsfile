@@ -29,7 +29,7 @@ podTemplate (yaml: readTrusted('pod.yaml'))  {
       stage ('build docker image and push to ecr repository') {
         container('buildkit') {
           sh """
-          ls -l && ls -l target/
+          ls -l && ls -l build/
           buildctl --addr tcp://buildkitd.devops-tools.svc.cluster.local:1234\
           --tlscacert /certs/ca.pem\
           --tlscert /certs/cert.pem\
