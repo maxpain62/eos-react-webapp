@@ -1,7 +1,7 @@
 replicaCount: 1
 
 containers:
-  image: 134448505602.dkr.ecr.ap-south-1.amazonaws.com/dev/eos-react-webapp:1.17.0
+  image: 134448505602.dkr.ecr.ap-south-1.amazonaws.com/dev/eos-react-webapp
 
 port: 80
 
