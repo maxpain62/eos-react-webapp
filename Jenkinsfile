@@ -37,7 +37,7 @@ podTemplate (yaml: readTrusted('pod.yaml'))  {
           build --frontend dockerfile.v0\
           --opt filename=Dockerfile --local context=.\
           --local dockerfile=.\
-          --output type=image,name=134448505602.dkr.ecr.ap-south-1.amazonaws.com/dev/eos-react-webapp:latest,push=true
+          --output type=image,name=134448505602.dkr.ecr.ap-south-1.amazonaws.com/dev/eos-react-webapp:1.17.0,push=true
           """
         }
       }
